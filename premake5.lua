@@ -51,7 +51,7 @@ include("premake5.files.lua")
 
 workspace "SumatraPDF"
   configurations { "Debug", "Release", "ReleaseAnalyze", }
-  platforms { "x32", "x32_xp", "x32_asan", "x64", "x64_ramicro" }
+  platforms { "x32", "x32_xp", "x32_asan", "x64", "x64_ramicro", "ARM64" }
   startproject "SumatraPDF"
 
   filter "platforms:x32_xp"
@@ -83,6 +83,12 @@ workspace "SumatraPDF"
      -- strangely this is not set by default for rc.exe
      resdefines { "_WIN64", "RAMICRO" }
      defines { "RAMICRO"}
+  filter {}
+
+  filter "platforms:ARM64"
+     architecture "ARM64"
+     -- strangely this is not set by default for rc.exe
+     resdefines { "_WIN64" }
   filter {}
 
   disablewarnings { "4127", "4189", "4324", "4458", "4522", "4702", "4800" }
@@ -136,6 +142,14 @@ workspace "SumatraPDF"
     targetdir "out/rel64ra_prefast"
   filter {"platforms:x64_ramicro", "configurations:Debug"}
     targetdir "out/dbg64ra"
+  filter {}
+  
+  filter {"platforms:ARM64", "configurations:Release"}
+    targetdir "out/relARM64"
+  filter {"platforms:ARM64", "configurations:ReleaseAnalyze"}
+    targetdir "out/relARM64_prefast"
+  filter {"platforms:ARM64", "configurations:Debug"}
+    targetdir "out/dbgARM64"
   filter {}
 
   objdir "%{cfg.targetdir}/obj"

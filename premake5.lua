@@ -302,6 +302,12 @@ workspace "SumatraPDF"
         '..\\bin\\nasm.exe -f win64 -D__x86_64__ -DWIN64 -DMSVC -I ../ext/libjpeg-turbo/simd/ -I ../ext/libjpeg-turbo/win/ -o "%{cfg.objdir}/%{file.basename}.obj" "%{file.relpath}"'
       }
     filter {}
+	
+	filter {'platforms:ARM64'}
+	  -- Maybe in future
+	  defines { "WITH_SIMD=0" }
+	filter {}
+
     libjpeg_turbo_files()
 
 
@@ -419,6 +425,15 @@ workspace "SumatraPDF"
         '..\\bin\\nasm.exe -f win64 -DWIN64 -I ../mupdf/ -o "%{cfg.objdir}/%{file.basename}.obj" "%{file.relpath}"'
       }
     filter {}
+	
+	filter {'files:**.asm', 'platforms:ARM64'}
+      buildmessage 'Compiling %{file.relpath}'
+      buildoutputs { '%{cfg.objdir}/%{file.basename}.obj' }
+      buildcommands {
+        'armasm64.exe -DWIN64 -i ../mupdf/ -o "%{cfg.objdir}/%{file.basename}.obj" "%{file.relpath}"'
+      }
+    filter {}
+	
     mupdf_files()
     links { "zlib", "freetype", "libjpeg-turbo", "jbig2dec", "openjpeg", "lcms2", "harfbuzz", "mujs" }
 

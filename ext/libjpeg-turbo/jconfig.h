@@ -39,5 +39,7 @@ typedef signed int INT32;
 
 #endif /* JPEG_INTERNALS */
 
-/* SumatraPDF: enable SIMD under Win32 */
+/* SumatraPDF: enable SIMD under Win32 (if on x86 or amd64, not ARM64) */
+#if defined(_M_IX86) || defined(_M_X64)
 #define WITH_SIMD
+#endif

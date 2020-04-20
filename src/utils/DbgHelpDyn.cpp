@@ -326,7 +326,12 @@ static bool GetCallstack(str::Str& s, CONTEXT& ctx, HANDLE hThread) {
 
     STACKFRAME64 stackFrame;
     memset(&stackFrame, 0, sizeof(stackFrame));
-#ifdef _WIN64
+#ifdef _M_ARM64
+    // https://github.com/JochenKalmbach/StackWalker/issues/26
+    stackFrame.AddrPC.Offset = ctx.Pc;
+    stackFrame.AddrFrame.Offset = ctx.Fp;
+    stackFrame.AddrStack.Offset = ctx.Sp;
+#elif defined _WIN64
     stackFrame.AddrPC.Offset = ctx.Rip;
     stackFrame.AddrFrame.Offset = ctx.Rbp;
     stackFrame.AddrStack.Offset = ctx.Rsp;

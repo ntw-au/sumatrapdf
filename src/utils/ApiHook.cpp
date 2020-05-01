@@ -112,6 +112,10 @@ static IMAGE_THUNK_DATA* FindIatThunkInModule(void* moduleBase, const std::strin
 
 static IMAGE_THUNK_DATA* FindIatThunk(const std::string_view& dllName, const std::string_view& apiName,
                                       const std::wstring moduleName = L"") {
+    // Process environment block
+    // FIXME For ARM64 perhaps see https://github.com/dotnet/corert/pull/461/files#diff-27a38ed9cc48dbd9e2100ecdb2241dc4R734?
+    // https://stackoverflow.com/questions/37288289/how-to-get-the-process-environment-block-peb-address-using-assembler-x64-os
+    // https://stackoverflow.com/questions/37288289/how-to-get-the-process-environment-block-peb-address-using-assembler-x64-os
 #if defined(_WIN64)
     PEB* peb = (PPEB)__readgsqword(0x60);
 #else

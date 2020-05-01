@@ -296,7 +296,9 @@ static void GetAddressInfo(str::Str& s, DWORD64 addr) {
 }
 
 static bool GetStackFrameInfo(str::Str& s, STACKFRAME64* stackFrame, CONTEXT* ctx, HANDLE hThread) {
-#if defined(_WIN64)
+#ifdef _M_ARM64
+    int machineType = IMAGE_FILE_MACHINE_ARM64;
+#elif defined(_WIN64)
     int machineType = IMAGE_FILE_MACHINE_AMD64;
 #else
     int machineType = IMAGE_FILE_MACHINE_I386;
@@ -492,7 +494,20 @@ void GetExceptionInfo(str::Str& s, EXCEPTION_POINTERS* excPointers) {
     PCONTEXT ctx = excPointers->ContextRecord;
     s.AppendFmt("\r\nRegisters:\r\n");
 
-#ifdef _WIN64
+#ifdef _M_ARM64
+    s.AppendFmt(
+        " X0:%016I64X  X1:%016I64X  X2:%016I64X  X3:%016I64X  X4:%016I64X  X5:%016I64X\r\n"
+        " X6:%016I64X  X7:%016I64X  X8:%016I64X  X9:%016I64X X10:%016I64X X11:%016I64X\r\n"
+        "X12:%016I64X X13:%016I64X X14:%016I64X X15:%016I64X X16:%016I64X X17:%016I64X\r\n"
+        "X18:%016I64X X19:%016I64X X20:%016I64X X21:%016I64X X22:%016I64X X23:%016I64X\r\n"
+        "X24:%016I64X X25:%016I64X X26:%016I64X X27:%016I64X X28:%016I64X\r\n",
+        ctx->X0, ctx->X1, ctx->X2, ctx->X3, ctx->X4, ctx->X5, ctx->X6, ctx->X7, ctx->X8, ctx->X9, ctx->X10, ctx->X11,
+        ctx->X12, ctx->X13, ctx->X14, ctx->X15, ctx->X16, ctx->X17, ctx->X18, ctx->X19, ctx->X20, ctx->X21, ctx->X22,
+        ctx->X23, ctx->X24, ctx->X25, ctx->X26, ctx->X27, ctx->X28);
+    s.AppendFmt("Fpcr:%016I64X  Fpsr:%016I64X", ctx->Fpcr, ctx->Fpsr);
+    s.AppendFmt("Cpsr:%016I64X  Sp:%016I64X  Pc:%016I64X", ctx->Cpsr, ctx->Sp, ctx->Pc);
+    s.AppendFmt("Context Flags:%016I64X", ctx->ContextFlags);
+#elif defined _WIN64
     s.AppendFmt(
         "RAX:%016I64X  RBX:%016I64X  RCX:%016I64X\r\nRDX:%016I64X  RSI:%016I64X  RDI:%016I64X\r\n"
         "R8: %016I64X\r\nR9: "

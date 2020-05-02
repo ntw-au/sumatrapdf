@@ -100,6 +100,7 @@ typedef struct _PEB {
         LPVOID ActiveProcessAffinityMask;
     };
 #ifdef _WIN64
+    // FIXME I don't know if this is correct for ARM64
     LPVOID GdiHandleBuffer[64];
 #else
     LPVOID GdiHandleBuffer[32];
@@ -119,3 +120,16 @@ typedef struct _PEB {
     LPVOID SystemAssemblyStorageMap;
     LPVOID MinimumStackCommit;
 } PEB, *PPEB;
+
+typedef struct _TEB {
+    PVOID Reserved1[12];
+    PPEB ProcessEnvironmentBlock;
+    PVOID Reserved2[399];
+    BYTE Reserved3[1952];
+    PVOID TlsSlots[64];
+    BYTE Reserved4[8];
+    PVOID Reserved5[26];
+    PVOID ReservedForOle; // Windows 2000 only
+    PVOID Reserved6[4];
+    PVOID TlsExpansionSlots;
+} TEB, *PTEB;
